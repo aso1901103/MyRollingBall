@@ -22,13 +22,14 @@ class MainActivity : AppCompatActivity()
     private var surfaceHeight:Int = 0//サーフェースビューの高さ
 
     private val radius = 50.0f;//ボールの半径
-    private val coef = 100.0f//ボールの移動量を計算するための係数
+    private var coef = 100.0f//ボールの移動量を計算するための係数
 
     private var ballX:Float = 0f;//ボールのx座標
     private var ballY:Float = 0f;//ボールのy座標
     private var vx:Float = 0f;//ボールのX座標の重力加速度
     private var vy:Float = 0f;//ボールのY座標の重力加速度
     private var time:Long = 0L;//前回の時間を記録する変数
+
 
 
 
@@ -40,12 +41,20 @@ class MainActivity : AppCompatActivity()
         val holder = surfaceView.holder
         //サーフェースホルダーのコールバックに自クラスへの通知を追加
         holder.addCallback(this);
-
     }
 
     //画面の表示・再表示のイベントコールバックメソッド
     override fun onResume() {
         super.onResume()
+        button.setOnClickListener{
+            //ボールを初期位置に戻し、加速度を0にする
+            ballX = (surfaceWidth/2).toFloat();
+            ballY = (surfaceHeight/8).toFloat();
+            textView.setText(R.string.ganbare_text)
+            vx=0f
+            vy=0f
+            coef=100f
+        }
 
     }
 
@@ -110,9 +119,13 @@ class MainActivity : AppCompatActivity()
                 //下に向かっていてボールが下にはみ出した時
                 vy = (vy*-1)/1.5f//ボールを反転させて勢いをつける
                 ballY = surfaceHeight-radius;//ボールがはみ出しているのを補正
-                textView.setText(R.string.clear_text)
+                textView.setText(R.string.win_text)
             }
-            //キャンバスに描画する命令
+            //壁判定メソッド呼び出し
+            ballCheck(2f,2f,1.25f,1.75f)
+            ballCheck(8f,4f,6f,1.5f)
+
+                //キャンバスに描画する命令
             drawCanvas()
         }
 
@@ -129,6 +142,20 @@ class MainActivity : AppCompatActivity()
 //                //デバッグログに出力
 //                Log.d("加速度センサー",str);
 //            }
+    }
+
+    private fun ballCheck(left:Float,top:Float,right:Float,bottom:Float){
+        //壁判定
+        if(ballX+radius>=surfaceWidth/left && surfaceHeight/top<ballY+radius) {
+            if(ballX-radius<=surfaceWidth/right && surfaceHeight/bottom>ballY-radius) {
+//                coef = 0f;
+//                textView.setText(R.string.lose_text)
+                if(ballX+radius>=surfaceWidth/left && ballX-radius<=surfaceWidth/right)
+                    vx*=-1
+                if(surfaceHeight/top<ballY+radius && surfaceHeight/bottom>ballY-radius)
+                    vy*=-1
+            }
+        }
     }
 
     //サーフェースが更新された時のイベントに反応して呼ばれるコールバックメソッド
@@ -176,20 +203,30 @@ class MainActivity : AppCompatActivity()
             ballY,//ボールのy座標
             radius,//ボールの半径
             Paint().apply {//Paintの匿名インスタンス
-                color = Color.GREEN;//色を緑にする
+                color = Color.YELLOW;//色を黄色にする
             }
         );
 
+        //長方形その1(赤)
         canvas.drawRect(
             surfaceWidth/2.toFloat(),
-            surfaceHeight/1.75.toFloat(),
-            surfaceWidth/1.25.toFloat(),
             surfaceHeight/2.toFloat(),
+            surfaceWidth/1.25.toFloat(),
+            surfaceHeight/1.75.toFloat(),
             Paint().apply {
                 color = Color.RED
             }
         )
 
+        canvas.drawRect(
+            surfaceWidth/8.toFloat(),
+            surfaceHeight/4.toFloat(),
+            surfaceWidth/6.toFloat(),
+            surfaceHeight/1.5.toFloat(),
+            Paint().apply {
+                color = Color.RED
+            }
+        )
         //キャンバスのロックを解除して描画(表示)
         surfaceView.holder.unlockCanvasAndPost(canvas);
     }
