@@ -121,10 +121,20 @@ class MainActivity : AppCompatActivity()
                 vy = (vy*-1)/1.5f//ボールを反転させて勢いをつける
                 ballY = surfaceHeight-radius;//ボールがはみ出しているのを補正
             }
-            //壁判定メソッド呼び出し
+            //失敗当たり判定メソッド呼び出し(四角)
             ballCheck(2f,2f,1.25f,1.75f)
             ballCheck(8f,4f,6f,1.5f)
 
+            //失敗当たり判定(丸)
+            if(ballX+radius>(surfaceWidth/1.35f)-100f && ballX-radius<(surfaceWidth/1.35f)+100f){
+                if (ballY-radius<(surfaceHeight/4f)+100f && ballY+radius>(surfaceHeight/4f)-100f){
+                    coef = 0f;
+                    textView.setText(R.string.lose_text)
+                    imageView.setImageResource(R.drawable.lose)
+                }
+            }
+
+            //クリア当たり判定
             if(ballX+radius>=surfaceWidth/1.75 && surfaceHeight/1.3<ballY+radius) {
                 if(ballX-radius<=surfaceWidth/1.1 && surfaceHeight/1.25>ballY-radius) {
                     coef = 0f;
@@ -239,6 +249,15 @@ class MainActivity : AppCompatActivity()
             surfaceHeight/1.25.toFloat(),
             Paint().apply {
                 color = Color.BLUE
+            }
+        )
+
+        canvas.drawCircle(
+            surfaceWidth/1.35f,
+            surfaceHeight/4f,
+            100f,
+            Paint().apply {
+                color = Color.RED
             }
         )
         //キャンバスのロックを解除して描画(表示)
