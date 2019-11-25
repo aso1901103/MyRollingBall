@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity()
             vx=0f
             vy=0f
             coef=100f
+            imageView.setImageResource(R.drawable.ganbaru)
         }
 
     }
@@ -119,12 +120,18 @@ class MainActivity : AppCompatActivity()
                 //下に向かっていてボールが下にはみ出した時
                 vy = (vy*-1)/1.5f//ボールを反転させて勢いをつける
                 ballY = surfaceHeight-radius;//ボールがはみ出しているのを補正
-                textView.setText(R.string.win_text)
             }
             //壁判定メソッド呼び出し
             ballCheck(2f,2f,1.25f,1.75f)
             ballCheck(8f,4f,6f,1.5f)
 
+            if(ballX+radius>=surfaceWidth/1.75 && surfaceHeight/1.3<ballY+radius) {
+                if(ballX-radius<=surfaceWidth/1.1 && surfaceHeight/1.25>ballY-radius) {
+                    coef = 0f;
+                    textView.setText(R.string.win_text)
+                    imageView.setImageResource(R.drawable.win)
+                }
+            }
                 //キャンバスに描画する命令
             drawCanvas()
         }
@@ -148,12 +155,9 @@ class MainActivity : AppCompatActivity()
         //壁判定
         if(ballX+radius>=surfaceWidth/left && surfaceHeight/top<ballY+radius) {
             if(ballX-radius<=surfaceWidth/right && surfaceHeight/bottom>ballY-radius) {
-//                coef = 0f;
-//                textView.setText(R.string.lose_text)
-                if(ballX+radius>=surfaceWidth/left && ballX-radius<=surfaceWidth/right)
-                    vx*=-1
-                if(surfaceHeight/top<ballY+radius && surfaceHeight/bottom>ballY-radius)
-                    vy*=-1
+                coef = 0f;
+                textView.setText(R.string.lose_text)
+                imageView.setImageResource(R.drawable.lose)
             }
         }
     }
@@ -225,6 +229,16 @@ class MainActivity : AppCompatActivity()
             surfaceHeight/1.5.toFloat(),
             Paint().apply {
                 color = Color.RED
+            }
+        )
+
+        canvas.drawRect(
+            surfaceWidth/1.75.toFloat(),
+            surfaceHeight/1.3.toFloat(),
+            surfaceWidth/1.1.toFloat(),
+            surfaceHeight/1.25.toFloat(),
+            Paint().apply {
+                color = Color.BLUE
             }
         )
         //キャンバスのロックを解除して描画(表示)

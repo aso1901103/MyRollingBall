@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">MyRollingBall</string>
     <string name="ganbare_text">がんばれ</string>
-    <string name="win_text">やったぜ。</string>
-    <string name="lose_text">敗北者ｗｗｗｗ</string>
+    <string name="win_text">クリア！</string>
+    <string name="lose_text">失敗！</string>
     <string name="reset_botton_text">リセット</string>
 
 </resources>
